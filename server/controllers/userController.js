@@ -1,15 +1,25 @@
 const UserService = require("../services/userService");
 
-const userLogin = (req, res) => {
-  res.json({ status: 200 });
+const userLogin = async (req, res) => {
+  const { loginOrEmail, password } = req.body;
+
+  try {
+    const result = await UserService.login(loginOrEmail, password);
+    res.json(result);
+  } catch (error) {
+    res.status(error.status).json({ message: error.message });
+  }
 };
 
 const userSignUp = async (req, res) => {
   const { login, email, password } = req.body;
 
-  const result = await UserService.sighUp(login, email, password);
-  console.log(result);
-  res.json(result);
+  try {
+    const result = await UserService.sighUp(login, email, password);
+    res.json(result);
+  } catch (error) {
+    res.status(error.status).json({ message: error.message });
+  }
 };
 
 const accountVerify = async (req, res) => {

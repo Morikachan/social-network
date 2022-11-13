@@ -4,6 +4,7 @@ const TokenService = require("./tokenService");
 const MailService = require("./mailService");
 const UserDTO = require("../dtos/userDTO");
 const uuid = require("uuid");
+const APIError = require("../exceptions/APIError");
 
 const saltRounds = 10;
 
@@ -12,7 +13,9 @@ class UserService {
     const loginCheck = await User.findOne({ $or: [{ email }, { login }] });
     if (loginCheck) {
       console.log(loginCheck);
-      return false;
+      throw APIError.BadRequest(
+        "User with this email or login is already exists"
+      );
     }
     const hasedPassword = await bcrypt.hash(password, saltRounds);
     const activationSecret = uuid.v4();
@@ -47,6 +50,24 @@ class UserService {
     foundUser.isVerified = true;
     await foundUser.save();
     return true;
+  }
+
+  async login(loginOrEmail, password) {
+    const candidate = await User.findOne({
+      $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
+    });
+    if (!candidate) {
+      throw APIError.BadRequest("User with this email or login not found");
+    }
+    const isPassValid = await bcrypt.compare(password, candidate.password);
+    if (!isPassValid) {
+      throw APIError.BadRequest("Password is invalid");
+    }
+
+    const user = new UserDTO(candidate);
+    const token = TokenService.generate(user);
+
+    return { user, token };
   }
 }
 
