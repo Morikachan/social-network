@@ -34,4 +34,8 @@ const accountVerify = async (req, res) => {
   }
 };
 
-module.exports = { userLogin, userSignUp, accountVerify };
+const checkAuth = (req, res) => {
+  console.log(req.user);
+};
+
+module.exports = { userLogin, userSignUp, accountVerify, checkAuth };
