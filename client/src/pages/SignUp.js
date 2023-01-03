@@ -1,10 +1,15 @@
 import { Formik } from "formik";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
 import { userSignup } from "../redux/actions/userActions";
+import {Navigate} from "react-router-dom";
 
 function SingUp() {
   const dispatch = useDispatch();
+  const user = useSelector(state => state.userReducer);
+  if (user.isLoggedIn) {
+    return <Navigate to="/profile" />
+  }
   const validationSchema = yup.object().shape({
     login: yup
       .string()

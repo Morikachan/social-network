@@ -3,6 +3,8 @@ const {
   userSignUp,
   accountVerify,
   checkAuth,
+  createPost,
+  getPosts,
 } = require("../controllers/userController");
 const authMiddleware = require("../middlewares/authMiddleware");
 
@@ -14,6 +16,11 @@ router.post("/signup", userSignUp);
 
 router.get("/accountVerify", accountVerify);
 
-router.post("/checkAuth", authMiddleware, checkAuth);
+router.get("/checkAuth", authMiddleware, checkAuth);
+
+router.get("/getPosts", authMiddleware, getPosts);
+
+router.post("/createPost", authMiddleware, createPost);
+
 
 module.exports = router;
